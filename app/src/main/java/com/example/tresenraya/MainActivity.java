@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Método que dibujará la casilla con un círculo o con un aspa
+     * Método que dibujará la casilla con un círculo o con un asp
      * @param casilla
      */
     private void marcarCasilla(int casilla){
