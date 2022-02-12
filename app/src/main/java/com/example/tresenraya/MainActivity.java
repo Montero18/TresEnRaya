@@ -2,14 +2,16 @@ package com.example.tresenraya;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -22,6 +24,13 @@ public class MainActivity extends AppCompatActivity {
     private int[] casillas;
     //partida
     private Partida partida;
+    double puntos=0;
+    private MediaPlayer media;
+    Helper helperBBDD;
+    SQLiteDatabase db;
+    int partidas=0;
+    int id=0;
+    ImageButton imageButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         casillas[6]=R.id.c1;
         casillas[7]=R.id.c2;
         casillas[8]=R.id.c3;
+        imageButton=findViewById(R.id.imageButton);
 
     }
 
@@ -87,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(view.getId()==R.id.btnDosJugadores){
             numJugadores = 2;
+
+
         }
 
         //comprobamos la dificultad elegida, 0:facil, 1:dificil, 2:extrema
@@ -118,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void toqueCasilla(View vista){
 
-
         //sólo ejecutaremos el contenido de este método si la partida está comenzada
         if(partida==null){
             return;
@@ -146,7 +157,15 @@ public class MainActivity extends AppCompatActivity {
 
             if(resultadoJuego>0){ //o bien hay empate o bien alguien ha ganado
                 evaluarFinal(resultadoJuego);
+
                 return; //salimos del método porque alguien ha ganado ya
+            }else {
+                if (media != null) {
+                    stopLocable(this);
+                }
+                if (media == null) {
+                    playLocalClin(this);
+                }
             }
 
             //después de marcar la casilla que hemos pulsado hacemos que juege la máquina
@@ -178,24 +197,46 @@ public class MainActivity extends AppCompatActivity {
      * @param resultadoJuego
      */
     private void evaluarFinal(int resultadoJuego) {
-
+        helperBBDD = new Helper(this);
+        db = helperBBDD.getReadableDatabase();
+        stopLocable(this);
+        playLocalTanTanTaaaan(this);
         String mensaje;
+        RadioGroup rgDificultad=findViewById(R.id.radioGroupDificultad);
+        int idDif=rgDificultad.getCheckedRadioButtonId();
 
         if (resultadoJuego==1){ //ha ganado el jugador 1
             mensaje="Jugador 1 ha ganado";
+            if(idDif==R.id.rbFacil) { puntos=1;
+            }else if(idDif==R.id.rbDificil){ puntos=2;
+            }else if(idDif==R.id.rbExtremo){ puntos=3; }
         }else if (resultadoJuego==2){//ha ganado el jugador 2
             mensaje="Jugador 2 ha ganado";
-        } else mensaje="Empate";
+            if(idDif==R.id.rbFacil) { puntos=0.5;
+            }else if(idDif==R.id.rbDificil){ puntos=1;
+            }else if(idDif==R.id.rbExtremo) { puntos=1.5; }
+        }else{
+            mensaje="Empate";
+            if(idDif==R.id.rbFacil) { puntos=0.5;
+            }else if(idDif==R.id.rbDificil){ puntos=1;
+            }else if(idDif==R.id.rbExtremo) {  puntos=1.5; }
+        }
+        db=helperBBDD.getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put("_ID",id);
+        values.put("numpartidas",partidas);
+        values.put("puntos",puntos);
+        db.insert("partidas", null, values);
 
         Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show();
 
         //finalizamos el juego
         partida=null;
+
         //volvemos a habilitar los controles para que se pueda volver a jugar
         (findViewById(R.id.btnUnJugador)).setEnabled(true);
         (findViewById(R.id.btnDosJugadores)).setEnabled(true);
         (findViewById(R.id.radioGroupDificultad)).setAlpha(1); //lo hacemos transparente
-
     }
 
     /**
@@ -211,6 +252,53 @@ public class MainActivity extends AppCompatActivity {
         }else{
             imagen.setImageResource(R.drawable.aspa); //si el jugador es el 2 dibujamos un aspa
         }
+    }
+
+    public void partida(View view) {
+        Intent i2=new Intent(getApplicationContext(), Partidas.class);
+        startActivity(i2);
+    }
+
+    public void ranking(View view) {
+        Intent i=new Intent(getApplicationContext(), Ranking.class);
+        startActivity(i);
+    }
+
+    public void playLocalClin(MainActivity view){
+        if(media==null){ media = MediaPlayer.create(this,R.raw.clin); }
+        if(!media.isPlaying()){ media.start(); }
+    }
+    public void stopLocable(MainActivity view){
+        media.stop();
+        media.release();
+        media = null;
+    }
+
+    public void playLocalTanTanTaaaan(MainActivity view){
+        if(media==null){ media = MediaPlayer.create(this,R.raw.tantantan); }
+        if(!media.isPlaying()){ media.start(); }
+    }
+
+    public void reproducirsonidojuego(View view){
+        if(media == null){
+            media = MediaPlayer.create(this, R.raw.musica);
+            media.start();
+            imageButton.setImageResource(R.drawable.soundoff);
+        }else if(media != null){
+            media.stop();
+            media.release();
+            media = null;
+            imageButton.setImageResource(R.drawable.soundon);
+        }
 
     }
+
+    public void onDestroy(){
+        super.onDestroy();
+        if(media != null){
+            media.stop();
+            media.release();
+        }
+    }
+
 }

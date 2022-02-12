@@ -10,7 +10,7 @@
           app:showAsAction="never"
           android:id = "@+id/Partidas"/>
 
-    <item android:title="Modificar"
+    <item android:title="Modificar Nombre"
           app:showAsAction="never"
           android:id = "@+id/Modificar"/>
 

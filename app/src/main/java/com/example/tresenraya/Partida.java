@@ -4,6 +4,7 @@ import java.util.Random;
 
 public class Partida {
 
+
     //definimos una constante de clase para guardar la dificultad
     public final int dificultad;
     public int jugador;
@@ -37,7 +38,7 @@ public class Partida {
         }
         else{
             //marcamos esa casilla con el jugador que la ha marcado
-              ocupadas[casilla]=jugador;
+            ocupadas[casilla]=jugador;
         }
         return true;
     }
@@ -85,6 +86,8 @@ public class Partida {
             jugador=1;
         }
 
+
+
         return 0; //el juego continúa, aún no ha ganado nadie
     }
 
@@ -109,7 +112,6 @@ public class Partida {
                 if (ocupadas[pos]==0){
                     casillaClave=pos;
                 }
-
             }
 
             //evaluamos si tenemos ya una posible combinacion con 2 en raya para ganar
@@ -150,5 +152,4 @@ public class Partida {
 
         return casilla;
     }
-
 }
