@@ -9,6 +9,6 @@
     <string name="dosJugadores">2 Players</string>
     <string name="partidas">Games</string>
     <string name="ranking">Ranking</string>
-    <string name="modificarNombre">Change Name</string>
+    <string name="modificarNombre">Change Name </string>
 
 </resources>
