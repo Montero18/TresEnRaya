@@ -6,13 +6,15 @@
           app:showAsAction="never"
           android:id = "@+id/Ranking"/>
 
-    <item android:title="Partidas"
-          app:showAsAction="never"
-          android:id = "@+id/Partidas"/>
+    <item
+        android:id="@+id/Partidas"
+        android:title="@string/partidas"
+        app:showAsAction="never" />
 
-    <item android:title="Modificar Nombre"
-          app:showAsAction="never"
-          android:id = "@+id/Modificar"/>
+    <item
+        android:id="@+id/Modificar"
+        android:title="@string/modificarNombre"
+        app:showAsAction="never" />
 
 
 </menu>

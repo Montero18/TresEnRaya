@@ -6,6 +6,7 @@
     <string name="extremo">Extremo</string>
     <string name="unJugador">1 Jugador</string>
     <string name="dosJugadores">2 Jugadores</string>
-    <string name="partidas">PARTIDAS</string>
+    <string name="partidas">Partidas</string>
     <string name="ranking">Ranking</string>
+    <string name="modificarNombre">Modificar Nombre</string>
 </resources>
