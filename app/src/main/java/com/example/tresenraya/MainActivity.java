@@ -251,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         values.put("nombre","Usuario " + persona);
-        values.put("jugador2","maquina");
+        values.put("jugador2","Maquina");
         values.put("dificultad",dificultad);
         values.put("resultado",resultado);
 
