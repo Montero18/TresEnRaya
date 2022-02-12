@@ -4,15 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fadeScrollbars="false"
+    android:isScrollContainer="false"
+    android:nestedScrollingEnabled="false"
+    android:scrollbarSize="10dp"
+    android:scrollbars="vertical"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
     tools:context=".Ranking">
 
     <ListView
         android:id="@+id/lv1"
         android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_height="600dp"
         android:freezesText="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

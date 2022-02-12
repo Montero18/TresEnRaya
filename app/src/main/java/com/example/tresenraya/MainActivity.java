@@ -18,19 +18,32 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    //botón que se ha pulsado (1 ó 2 jugadores)
+    //Boton para seleccionar 1 jugador o 2 jugadores
     private int numJugadores;
-    //array donde guardaremos las casillas del tablero
+
+    //Array donde se guardaran las casillas del tablero
     private int[] casillas;
-    //partida
+
+    //Variables Partida
     private Partida partida;
-    double puntos=0;
+    double puntos = 0;
     private MediaPlayer media;
+    private MediaPlayer media2;
+    int partidas = 0;
+    int id = 0;
+
+    String resultado;
+    int persona = 1;
+    String dificultad;
+
+    //Base de Datos
     Helper helperBBDD;
     SQLiteDatabase db;
-    int partidas=0;
-    int id=0;
+
+    //Imagen
     ImageButton imageButton;
+
+    ContentValues values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,53 +210,82 @@ public class MainActivity extends AppCompatActivity {
      * @param resultadoJuego
      */
     private void evaluarFinal(int resultadoJuego) {
-        helperBBDD = new Helper(this);
-        db = helperBBDD.getReadableDatabase();
-        stopLocable(this);
-        playLocalTanTanTaaaan(this);
+        Helper helperBBDD = new Helper(this);
+        SQLiteDatabase db = helperBBDD.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
         String mensaje;
+
         RadioGroup rgDificultad=findViewById(R.id.radioGroupDificultad);
         int idDif=rgDificultad.getCheckedRadioButtonId();
 
         if (resultadoJuego==1){ //ha ganado el jugador 1
             mensaje="Jugador 1 ha ganado";
-            if(idDif==R.id.rbFacil) { puntos=1;
-            }else if(idDif==R.id.rbDificil){ puntos=2;
-            }else if(idDif==R.id.rbExtremo){ puntos=3; }
+            if(idDif==R.id.rbFacil) {
+                puntos=1.0;
+                dificultad = "Facil";
+            }else if(idDif==R.id.rbDificil){
+                puntos=1.5;
+                dificultad = "Dificil";
+            }else if(idDif==R.id.rbExtremo){
+                puntos=3.0;
+                dificultad = "Extremo";
+            }
+            resultado = "Gana Usuario " + persona;
         }else if (resultadoJuego==2){//ha ganado el jugador 2
             mensaje="Jugador 2 ha ganado";
-            if(idDif==R.id.rbFacil) { puntos=0.5;
-            }else if(idDif==R.id.rbDificil){ puntos=1;
-            }else if(idDif==R.id.rbExtremo) { puntos=1.5; }
+            resultado = "Gana Maquina";
         }else{
             mensaje="Empate";
-            if(idDif==R.id.rbFacil) { puntos=0.5;
-            }else if(idDif==R.id.rbDificil){ puntos=1;
-            }else if(idDif==R.id.rbExtremo) {  puntos=1.5; }
+            if(idDif==R.id.rbFacil) {
+                puntos=0.5;
+                dificultad = "Facil";
+            }else if(idDif==R.id.rbDificil){
+                puntos=1.0;
+                dificultad = "Dificil";
+            }else if(idDif==R.id.rbExtremo) {
+                puntos=1.5;
+                dificultad = "Extremo";
+            }
+            resultado = "Empate";
         }
-        db=helperBBDD.getWritableDatabase();
-        ContentValues values=new ContentValues();
-        values.put("_ID",id);
-        values.put("numpartidas",partidas);
-        values.put("puntos",puntos);
-        db.insert("partidas", null, values);
+
+        values.put("nombre","Usuario " + persona);
+        values.put("jugador2","maquina");
+        values.put("dificultad",dificultad);
+        values.put("resultado",resultado);
+
+        db.insert("partidas",null,values);
+        db.close();
+        persona++;
+
 
         Toast.makeText(this,mensaje,Toast.LENGTH_SHORT).show();
 
         //finalizamos el juego
         partida=null;
-
         //volvemos a habilitar los controles para que se pueda volver a jugar
         (findViewById(R.id.btnUnJugador)).setEnabled(true);
         (findViewById(R.id.btnDosJugadores)).setEnabled(true);
         (findViewById(R.id.radioGroupDificultad)).setAlpha(1); //lo hacemos transparente
+
+
+        if(media != null){
+            media.stop();
+            media.release();
+            media = null;
+        }
+        if(media == null){
+            media = MediaPlayer.create(this, R.raw.clin);
+            media.start();
+        }
     }
 
     /**
      * Método que dibujará la casilla con un círculo o con un aspa
      * @param casilla
      */
-    private void marcarCasilla(int casilla){
+    private void marcarCasilla (int casilla){
         ImageView imagen;
         imagen=findViewById(casillas[casilla]); //le asignamos el id de la imagen de la casilla correspondiente a la que hay que marcar
 
@@ -254,45 +296,52 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void partida(View view) {
+    public void partida (View view) {
         Intent i2=new Intent(getApplicationContext(), Partidas.class);
         startActivity(i2);
     }
 
-    public void ranking(View view) {
+    public void ranking (View view) {
         Intent i=new Intent(getApplicationContext(), Ranking.class);
         startActivity(i);
     }
 
-    public void playLocalClin(MainActivity view){
-        if(media==null){ media = MediaPlayer.create(this,R.raw.clin); }
-        if(!media.isPlaying()){ media.start(); }
+    //Musica
+    public void playLocalClin (MainActivity view){
+        if(media==null){
+            media = MediaPlayer.create(this,R.raw.clin);
+        }
+        if(!media.isPlaying()){
+            media.start();
+        }
     }
-    public void stopLocable(MainActivity view){
+    public void stopLocable (MainActivity view){
         media.stop();
         media.release();
         media = null;
     }
 
-    public void playLocalTanTanTaaaan(MainActivity view){
+    public void playLocalTanTanTaaaan (MainActivity view){
         if(media==null){ media = MediaPlayer.create(this,R.raw.tantantan); }
         if(!media.isPlaying()){ media.start(); }
     }
 
-    public void reproducirsonidojuego(View view){
-        if(media == null){
-            media = MediaPlayer.create(this, R.raw.musica);
-            media.start();
+    //Musica de fondo, que se detendra cuando alguna casilla se seleccione
+    public void reproducirSonidoJuego(View view){
+        if(media2 == null){
+            media2 = MediaPlayer.create(this, R.raw.musica);
+            media2.start();
             imageButton.setImageResource(R.drawable.soundoff);
-        }else if(media != null){
-            media.stop();
-            media.release();
-            media = null;
+        }else if(media2 != null) {
+            media2.stop();
+            media2.release();
+            media2 = null;
             imageButton.setImageResource(R.drawable.soundon);
         }
 
     }
 
+    //Parar musica
     public void onDestroy(){
         super.onDestroy();
         if(media != null){
